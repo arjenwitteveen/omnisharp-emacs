@@ -64,17 +64,19 @@ to use server installed via `omnisharp-install-server`.
             nil)))))
 
 (defun omnisharp--do-server-start (project-root)
-  (let ((server-executable-path (omnisharp--resolve-omnisharp-server-executable-path)))
-    (message (format "omnisharp: starting server on project root: \"%s\"" project-root))
+  (let ((server-executable-path (omnisharp--resolve-omnisharp-server-executable-path))
+        (project-root-file project-root)
+        (project-root-dir (file-name-directory project-root)))
+    (message (format "omnisharp: starting server on project root: \"%s\"" project-root-dir))
 
     (omnisharp--log-reset)
-    (omnisharp--log (format "starting server on project root \"%s\"" project-root))
+    (omnisharp--log (format "starting server on project root \"%s\"" project-root-dir))
     (omnisharp--log (format "Using server binary on %s" server-executable-path))
 
     ;; Save all csharp buffers to ensure the server is in sync"
     (save-some-buffers t (lambda () (and (buffer-file-name) (string-equal (file-name-extension (buffer-file-name)) "cs"))))
 
-    (setq omnisharp--last-project-path project-root)
+    (setq omnisharp--last-project-path project-root-dir)
 
     ;; this can be set by omnisharp-reload-solution to t
     (setq omnisharp--restart-server-on-stop nil)
@@ -83,11 +85,12 @@ to use server installed via `omnisharp-install-server`.
           (make-omnisharp--server-info
            ;; use a pipe for the connection instead of a pty
            (let* ((process-connection-type nil)
-                  (default-directory (expand-file-name project-root))
+                  (default-directory (expand-file-name project-root-dir))
                   (omnisharp-process (start-process
                                       "OmniServer" ; process name
                                       "OmniServer" ; buffer name
                                       server-executable-path
+                                      "-s" project-root-file
                                       "--encoding" "utf-8"
                                       "--stdio")))
              (buffer-disable-undo (process-buffer omnisharp-process))
@@ -101,7 +104,7 @@ to use server installed via `omnisharp-install-server`.
                                        (if omnisharp--restart-server-on-stop
                                            (omnisharp--do-server-start omnisharp--last-project-path)))))
              omnisharp-process)
-           project-root))))
+           project-root-dir))))
 
 (defun omnisharp--clear-response-handlers ()
   "For development time cleaning up impossible states of response

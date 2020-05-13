@@ -71,7 +71,7 @@ server backend."
   :keymap omnisharp-mode-map
   (omnisharp--init-imenu-support)
   (omnisharp--init-eldoc-support)
-  (omnisharp--attempt-to-start-server-for-buffer)
+  ;;(omnisharp--attempt-to-start-server-for-buffer)
 
   ;; These are selected automatically when flycheck is enabled
   (add-to-list 'flycheck-checkers 'csharp-omnisharp-codecheck))

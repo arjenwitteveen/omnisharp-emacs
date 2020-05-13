@@ -216,7 +216,7 @@ moving point."
 
 (defun omnisharp--get-omnisharp-server-executable-command
   (solution-file-path &optional server-exe-file-path)
-  (let* ((server-exe-file-path-arg (expand-file-name 
+  (let* ((server-exe-file-path-arg (expand-file-name
             (if (eq nil server-exe-file-path)
           omnisharp-server-executable-path
               server-exe-file-path)))
@@ -342,7 +342,8 @@ was found. Uses projectile for the job."
   (if (require 'projectile nil 'noerror)
       (condition-case nil
           (projectile-project-root)
-        (error nil))))
+        (error nil))
+    (project-directory)))
 
 (defun omnisharp--buffer-contains-metadata()
   "Returns t if buffer is omnisharp metadata buffer."
